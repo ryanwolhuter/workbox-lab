@@ -71,6 +71,6 @@ workbox.routing.registerRoute(new RegExp('pages/*'), args => {
       }
       return response;
     })
-    .catch(response => caches.match('pages/offline.html'))
+    .catch(() => caches.match('pages/offline.html'))
 })
 
