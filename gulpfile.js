@@ -20,13 +20,13 @@ const workboxBuild = require('workbox-build');
 
 // Clean "build" directory
 const clean = () => {
-  return del(['build/*'], {dot: true});
+  return del(['build/*'], { dot: true });
 };
 gulp.task('clean', clean);
 
 // Copy "src" directory to "build" directory
 const copy = () => {
- return gulp.src(['src/**/*']).pipe(gulp.dest('build'));
+  return gulp.src(['src/**/*']).pipe(gulp.dest('build'));
 };
 gulp.task('copy', copy);
 
@@ -42,6 +42,8 @@ const buildSw = () => {
       'js\/animation.js',
       'images\/home\/*.jpg',
       'images\/icon\/*.svg',
+      'pages/offline.html',
+      'pages/404.html'
     ]
   }).then(resources => {
     console.log(`Injected ${resources.count} resources for precaching, ` + `totaling ${resources.size} bytes.`);

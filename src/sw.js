@@ -31,3 +31,46 @@ workbox.routing.registerRoute(
     ]
   })
 );
+
+const articleHandler = workbox.strategies.networkFirst({
+  cacheName: 'articles-cache',
+  plugins: [
+    new workbox.expiration.Plugin({
+      maxEntries: 50,
+    })
+  ]
+});
+
+workbox.routing.registerRoute(/(.*)article(.*)\.html/, args => {
+  return articleHandler.handle(args)
+    .then(response => {
+      if (!response) {
+        return caches.match('pages/offline.html');
+      } else if (response.status === 404) {
+        return caches.match('pages/404.html');
+      }
+      return response;
+    });
+});
+
+const postsHandler = workbox.strategies.cacheFirst({
+  cacheName: 'posts-cache',
+  plugins: [
+    new workbox.expiration.Plugin({
+      maxEntries: 50,
+      maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days      
+    })
+  ]
+});
+
+workbox.routing.registerRoute(new RegExp('pages/*'), args => {
+  return postsHandler.handle(args)
+    .then(response => {
+      if (response.status === 404) {
+        return caches.match('pages/404.html');
+      }
+      return response;
+    })
+    .catch(response => caches.match('pages/offline.html'))
+})
+
